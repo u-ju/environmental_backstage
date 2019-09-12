@@ -447,20 +447,20 @@
 								]
 							},
 
-							{
-								icon: 'el-icon-lx-record',
-								index: 'video',
-								title: '视频管理',
-								subs: [{
-										index: 'VideoCate',
-										title: '视频分类'
-									},
-									{
-										index: 'Videos',
-										title: '视频中心'
-									},
-								]
-							},
+//							{
+//								icon: 'el-icon-lx-record',
+//								index: 'video',
+//								title: '视频管理',
+//								subs: [{
+//										index: 'VideoCate',
+//										title: '视频分类'
+//									},
+//									{
+//										index: 'Videos',
+//										title: '视频中心'
+//									},
+//								]
+//							},
 							//		                    {
 							//		                        icon: 'el-icon-lx-copy',
 							//		                        index: 'Vicinage',

@@ -18,7 +18,7 @@
                 </el-select>
                 <el-input v-model="search.user_id" placeholder="用户ID" class="handle-input mr10"></el-input>
                 <el-input v-model="search.idcard" placeholder="身份证号" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                <el-button type="primary" icon="search" @click="searchbtn">搜索</el-button>
 
             </div>
             <el-table :data="tableData" border class="table" ref="multipleTable" @selection-change="handleSelectionChange" id="out-table"  :row-style="{height:'65px'}">
@@ -196,8 +196,8 @@
             },
             
 			
-            search() {
-                this.getData(1)
+            searchbtn() {
+                this.getData()
             },
             formatter(row, column) {
                 return row.address;
@@ -222,7 +222,7 @@
 				        avatar:res.data.result.avatar,
 				        sex:res.data.result.sex,
 				        status_remark:res.data.result.status_remark,
-				        signImages:[res.data.result.front,res.data.result.avatar,res.data.result.back],
+				        signImages:[res.data.result.front,res.data.result.back,res.data.result.avatar],
 		            }
 		           	that.form = form
 		        })

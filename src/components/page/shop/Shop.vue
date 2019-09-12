@@ -10,15 +10,19 @@
 				<el-input v-model="search.user_id" placeholder="请输入用户ID" class="handle-input mr10"></el-input>
 				<el-input v-model="search.contact" placeholder="请输入联系方式" class="handle-input mr10"></el-input>
 				<el-input v-model="search.keywords" placeholder="请输入用户关键字" class="handle-input mr10"></el-input>
+				<el-select v-model="search.status" placeholder="审核状态">
+					<el-option v-for="item in sele" :key="item.id" :value="item.id" :label="item.name">
+					</el-option>
+				</el-select>
 				<el-button type="primary" icon="search" @click="searchbtn">搜索</el-button>
 
 			</div>
 			<el-table :data="tableData" border class="table" ref="multipleTable" @selection-change="handleSelectionChange" id="out-table">
 				<!--<el-table-column type="selection" width="55" align="center"></el-table-column>-->
-				<el-table-column prop="shop_id" label="商店ID"  width="100" align="center">
+				<el-table-column prop="shop_id" label="商店ID" width="100" align="center">
 				</el-table-column>
 
-				<el-table-column prop="user_id" label="用户ID"  width="100" align="center">
+				<el-table-column prop="user_id" label="用户ID" width="100" align="center">
 					<template slot-scope="scope">
 						<router-link :to="{path:'/UserDetails',query: {id: scope.row.user_id}}">
 							<div>{{ scope.row.user_id }}</div>
@@ -51,7 +55,12 @@
 				</el-table-column>
 				<el-table-column prop='created_at' label="创建时间" align="center">
 				</el-table-column>
+				<el-table-column prop="qrcode" label="二维码" align="center">
+					<template slot-scope="scope">
 
+						<canvas class="canvas" :id="'canvas'+scope.row.shop_id" @click="lookQrcode(scope.row.gather_qrcode)"></canvas>
+					</template>
+				</el-table-column>
 				<el-table-column prop="status_name" label="审核状态" align="center">
 					<template slot-scope="scope">
 						<el-tag disable-transitions>{{scope.row.status_name}}</el-tag>
@@ -69,9 +78,9 @@
 						<el-button type="text" icon="el-icon-edit" @click="handleIn(scope.row)">{{scope.row.is_vendor==0?'第三方入驻':'第三方更新'}}</el-button>
 						<el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">审核</el-button>
 						<!--<template slot-scope="scope">-->
-							<router-link :to="{path:'/Shopadd',query: {id: scope.row.shop_id}}">
-								<el-button type="text" icon="el-icon-edit" >编辑</el-button>
-							</router-link>
+						<router-link :to="{path:'/Shopadd',query: {id: scope.row.shop_id}}">
+							<el-button type="text" icon="el-icon-edit">编辑</el-button>
+						</router-link>
 						<!--</template>-->
 						<!--<el-button type="text" icon="el-icon-edit" @click="handleEdit2(scope.$index, scope.row)">广告位</el-button>-->
 						<el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
@@ -79,7 +88,7 @@
 					</template>
 				</el-table-column>
 			</el-table>
-			
+
 			<div class="pagination">
 				<el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :page-count='last_page' :page-size="15">
 				</el-pagination>
@@ -276,39 +285,27 @@
 						{{form.status_remark}}
 					</el-form-item>
 				</el-form>
-				<el-form ref="third" :model="third"  label-width="100px" class='floatL'>
+				<el-form ref="third" :model="third" label-width="100px" class='floatL'>
 					<div class="textC">
 						三方商家经营区域
 					</div>
-					<el-form-item label="省" >
+					<el-form-item label="省">
 						<el-select v-model="third.provName" value-key='provId' placeholder="请选择" @change='provblur'>
-						    <el-option
-						      v-for="item in provIndex"
-						      :key="item.provId"
-						      :label="item.provName"
-						      :value="item">
-						    </el-option>
-						  </el-select>
+							<el-option v-for="item in provIndex" :key="item.provId" :label="item.provName" :value="item">
+							</el-option>
+						</el-select>
 					</el-form-item>
 					<el-form-item label="市" v-if='cityIndex.length>0'>
 						<el-select v-model="third.cityName" value-key='cityId' placeholder="请选择" @change='cityblur'>
-						    <el-option
-						      v-for="item in cityIndex"
-						      :key="item.cityId"
-						      :label="item.cityName"
-						      :value="item">
-						    </el-option>
-						  </el-select>
+							<el-option v-for="item in cityIndex" :key="item.cityId" :label="item.cityName" :value="item">
+							</el-option>
+						</el-select>
 					</el-form-item>
 					<el-form-item label="区" v-if='areaIndex.length>0'>
-						<el-select v-model="third.areaName" value-key='areaId' placeholder="请选择"  @change='areablur'>
-						    <el-option
-						      v-for="item in areaIndex"
-						      :key="item.areaId"
-						      :label="item.areaName"
-						      :value="item">
-						    </el-option>
-						  </el-select>
+						<el-select v-model="third.areaName" value-key='areaId' placeholder="请选择" @change='areablur'>
+							<el-option v-for="item in areaIndex" :key="item.areaId" :label="item.areaName" :value="item">
+							</el-option>
+						</el-select>
 					</el-form-item>
 				</el-form>
 			</div>
@@ -344,14 +341,22 @@
                 <el-button type="primary" @click="deleteRow2">确 定</el-button>
             </span>
 		</el-dialog>
+		<div class="bgzzc" v-show="centerDialogVisible">
+        	
+        </div>
+		<div class="bgcon" v-show="centerDialogVisible">
+        	<div class="el-icon-close" @click="centerDialogVisible=false"></div>
+        	<div class="" >
+        		<canvas class="" id="canvaslook" ></canvas>
+        	</div>
+        </div>
 	</div>
 </template>
 
 <script>
-	import FileSaver from 'file-saver'
-	import XLSX from 'xlsx'
+	import QRCode from 'qrcode'
 	export default {
-		name: 'realname',
+		name: 'shop',
 		data() {
 			return {
 				tableData: [],
@@ -399,7 +404,8 @@
 				search: {
 					user_id: '',
 					keywords: '',
-					contact: ''
+					contact: '',
+					status: ''
 				},
 				lp_idcard: {
 					front: '',
@@ -411,41 +417,106 @@
 					subBank: []
 				},
 				inVisible: false,
-				third:{
-					provName:[],
-					cityName:[],
-					areaName:[]
+				third: {
+					provName: [],
+					cityName: [],
+					areaName: []
 				},
-				provIndex:[],
-				areaIndex:[],
-				cityIndex:[],
-				is_vendor:''
+				provIndex: [],
+				areaIndex: [],
+				cityIndex: [],
+				is_vendor: '',
+				centerDialogVisible:false,
+				isFist:true
 			}
 		},
+		components: {
+	        QRCode: QRCode
+	      },
+//		created() {
+//			this.getData();
+//			this.provData()
+//			this.getSele()
+//		},
+//		updated(){
+//		var that = this
+//		
+//		if(!that.isFist){return false;}
+//		console.log(11111)
+//		console.log(that.tableData)
+//		for(var i in that.tableData){
+//			console.log(11111)
+//		}
+////	    	for(var i in that.tableData){
+////	    		console.log(that.tableData)
+////	    		that.useqrcode(that.tableData[i]['shop_id'],that.tableData[i]['gather_qrcode'])	
+////	    		
+////	        }
+//	    	this.isFist=false
+//		},
 		created() {
-			this.getData();
-			this.provData()
-			var that = this;
-			this.$axios.get(that.ports.Home.config).then(function(res) {
-				that.sele = res.data.result.shop_status;
-				that.shop_type = res.data.result.shop_type;
-				that.tshop_cate = res.data.result.tshop_cate;
-				that.shop_cate = res.data.result.shop_cate;
-				var arr = [res.data.result.shop_cate, res.data.result.tshop_cate]
-				for(var key in that.shop_type) {
-					that.shop_type[key]["children"] = arr[key]
-				}
-			})
-		},
-		computed: {
-			data() {
-				return this.tableData
-
-			}
+	        this.getData();
+	        this.getSele();
+	        this.provData();
+	   },
+		updated(){
+			console.log(2)
+			var that = this
+			if(!that.isFist){return false;}
+			console.log(that.isFist)
+	    	for(var i in that.tableData){
+	    		that.useqrcode(that.tableData[i]['shop_id'],that.tableData[i]['gather_qrcode'])	
+	        	that.isFist=true
+	    	}
+	    	
 		},
 		methods: {
+			getSele(){
+				var that = this;
+				this.$axios.get(that.ports.Home.config).then(function(res) {
+					that.sele = res.data.result.shop_status;
+					that.shop_type = res.data.result.shop_type;
+					that.tshop_cate = res.data.result.tshop_cate;
+					that.shop_cate = res.data.result.shop_cate;
+					var arr = [res.data.result.shop_cate, res.data.result.tshop_cate]
+					for(var key in that.shop_type) {
+						that.shop_type[key]["children"] = arr[key]
+					}
+				})
+			},
+			useqrcode(num, qrcode) {
+//				console.log(num, qrcode)
+				var canvas = document.getElementById('canvas' + num)
+				if(canvas) {
+//					console.log(canvas)
+					QRCode.toCanvas(canvas, qrcode, function(error) {
+//						if(error) console.error(error)
+					})
+				}
+			},
+			lookQrcode(qrcode) {
+				console.log(qrcode)
+				if(!qrcode)return
+				this.centerDialogVisible = true
+				this.useqrcode('look', qrcode)
+
+			},
+			// 获取 easy-mock 的模拟数据
+			getData(page = 1, url = '') {
+				console.log(1)
+				var that = this;
+				this.$axios.get(that.ports.shop.index + "?page=" + page + "&source=offline" + url, {
+					params: this.search
+				}).then(function(res) {
+					that.tableData = res.data.result.list;
+					console.log(that.tableData)
+					that.last_page = Number(res.data.result.page.last_page);
+					that.cur_page = Number(res.data.result.page.current_page);
+					that.loading = false
+				})
+			},
 			//省
-			provData(){
+			provData() {
 				var that = this;
 				this.$axios.get(that.ports.huifu.provIndex).then(function(res) {
 					that.provIndex = res.data.result.list;
@@ -453,39 +524,42 @@
 					that.countyIndex = []
 				})
 			},
-			cityData(){
+			cityData() {
 				var that = this;
-				this.$axios.get(that.ports.huifu.cityIndex,
-				{params: {provId:that.third.provName.provId}}
-				).then(function(res) {
+				this.$axios.get(that.ports.huifu.cityIndex, {
+					params: {
+						provId: that.third.provName.provId
+					}
+				}).then(function(res) {
 					that.cityIndex = res.data.result.list;
 					that.countyIndex = []
 				})
 			},
-			countyData(){
+			countyData() {
 				var that = this;
-				this.$axios.get(that.ports.huifu.countyIndex,
-				{
-					params: {provId:that.third.provName.provId,cityId:that.third.cityName.cityId}
-				}
-				).then(function(res) {
+				this.$axios.get(that.ports.huifu.countyIndex, {
+					params: {
+						provId: that.third.provName.provId,
+						cityId: that.third.cityName.cityId
+					}
+				}).then(function(res) {
 					that.areaIndex = res.data.result.list;
 				})
 			},
-			provblur(e){
+			provblur(e) {
 				console.log(e)
 				this.cityData()
-			},	
-			cityblur(e){
+			},
+			cityblur(e) {
 				this.countyData()
 			},
-			areablur(e){
-				
+			areablur(e) {
+
 			},
 			handleIn(row) {
 				var that = this
-				that.shop_id=row.shop_id
-				that.is_vendor=row.is_vendor
+				that.shop_id = row.shop_id
+				that.is_vendor = row.is_vendor
 				this.$axios.get(that.ports.shop.show + '?shop_id=' + row.shop_id).then(function(res) {
 					that.form.signed_rate = res.data.result.signed_rate
 					that.form.status = res.data.result.status
@@ -510,27 +584,29 @@
 					that.inVisible = true;
 				})
 			},
-			InEdit(){
+			InEdit() {
 				var that = this;
-				var url1 = that.ports.shop.thirdpartyStore,data={}
-				if(this.is_vendor==0){
-					data={
+				var url1 = that.ports.shop.thirdpartyStore,
+					data = {}
+				if(this.is_vendor == 0) {
+					data = {
 						provName: that.third.provName.provName,
 						cityName: that.third.cityName.cityName,
 						areaName: that.third.areaName.areaName,
 						shop_id: that.shop_id,
 					}
-				}else{
+				} else {
 					url1 = that.ports.shop.thirdpartyUpdate
-					data={
-						provName: that.third.areaName.areaName?that.third.provName.provName:'',
-						cityName: that.third.areaName.areaName?that.third.cityName.cityName:'',
-						areaName: that.third.areaName.areaName?that.third.areaName.areaName:'',
+					data = {
+						provName: that.third.areaName.areaName ? that.third.provName.provName : '',
+						cityName: that.third.areaName.areaName ? that.third.cityName.cityName : '',
+						areaName: that.third.areaName.areaName ? that.third.areaName.areaName : '',
 						shop_id: that.shop_id,
 					}
 				}
 				var data = that.qs.stringify({
-					data})
+					data
+				})
 				that.$axios.post(url1, data)
 					.then(function(res) {
 						console.log(res);
@@ -553,18 +629,7 @@
 				this.cur_page = val;
 				this.getData(val, this.url);
 			},
-			// 获取 easy-mock 的模拟数据
-			getData(page = 1, url = '') {
-				var that = this;
-				this.$axios.get(that.ports.shop.index + "?page=" + page + "&source=offline" + url, {
-					params: this.search
-				}).then(function(res) {
-					that.tableData = res.data.result.list;
-					that.last_page = Number(res.data.result.page.last_page);
-					that.cur_page = Number(res.data.result.page.current_page);
-					that.loading = false
-				})
-			},
+			
 
 			searchbtn() {
 				this.getData(1)
@@ -575,12 +640,12 @@
 			filterTag(value, row) {
 				return row.tag === value;
 			},
-			
+
 			handleEdit(index, row) {
 				this.idx = index;
 				var that = this
 				const item = this.tableData[index];
-				that.shop_id=row.shop_id
+				that.shop_id = row.shop_id
 				this.$axios.get(that.ports.shop.show + '?shop_id=' + row.shop_id).then(function(res) {
 					that.form.signed_rate = res.data.result.signed_rate
 					that.form.status = res.data.result.status
@@ -768,9 +833,62 @@
 		max-width: 200px;
 		overflow: hidden;
 	}
-	.textC{
+	
+	.textC {
 		font-size: 24px;
 		text-align: center;
-		margin:  0 0 20px 0;
+		margin: 0 0 20px 0;
 	}
+	.canvas{
+  	width: 60px !important;
+  	height: 60px !important;
+  }
+  .bgzzc{
+  	position: fixed;
+  	top: 0;
+  	left: 0;
+  	height: 100%;
+  	width: 100%;
+  	background-color: rgba(0,0,0,.35);
+  	z-index: 2020;
+  }
+  .bgcon{
+  	width: 400px;
+  	height: 400px;
+  	position: absolute;
+  	top: 50%;
+  	left: 50%;
+  	transform: translate(-50%,-50%);
+  	background-color: white;
+  	border-radius: 10px;
+  	z-index: 2040;
+  }
+  .el-icon-close{
+  	font-size: 30px;
+  	position: absolute;
+  	right: 10px;
+  	top: 10px;
+  }
+  #canvaslook{
+  	width: 300px !important;
+  	height: 300px !important;
+  	position: absolute;
+  	top: 50%;
+  	left: 50%;
+  	transform: translate(-50%,-50%);
+  }
+  .icon{
+  	margin-left: 40px;
+  	font-size: 28px;
+  }
+  .switch_group{
+  	display: flex;
+  	margin: 10px 0 0 0;
+  }
+  .el-icon-circle-plus-outline{
+  	color: #67C23A;
+  }
+  .el-icon-delete{
+  	color: #F56C6C;
+  }
 </style>

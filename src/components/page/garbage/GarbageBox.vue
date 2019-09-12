@@ -234,6 +234,7 @@ export default {
 		this.form.switch_group.splice(index, 1);
   	},
   	useqrcode (num,qrcode) {
+  		console.log(num, qrcode)
         var canvas = document.getElementById('canvas'+num)
         if(canvas){
         	QRCode.toCanvas(canvas, qrcode, function (error) {

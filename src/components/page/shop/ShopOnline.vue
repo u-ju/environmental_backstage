@@ -10,6 +10,10 @@
             	<el-input v-model="search.user_id" placeholder="请输入用户ID" class="handle-input mr10"></el-input>
                 <el-input v-model="search.contact" placeholder="请输入联系方式" class="handle-input mr10"></el-input>
                 <el-input v-model="search.keywords" placeholder="请输入用户关键字" class="handle-input mr10"></el-input>
+                <el-select v-model="search.status" placeholder="审核状态">
+					<el-option v-for="item in sele" :key="item.id" :value="item.id" :label="item.name">
+					</el-option>
+				</el-select>
                 <el-button type="primary" icon="search" @click="searchbtn">搜索</el-button>    
             </div>
             <el-table :data="tableData" border class="table" ref="multipleTable" @selection-change="handleSelectionChange" id="out-table">
@@ -69,7 +73,10 @@
                     <template slot-scope="scope">
                     	<el-button type="text" icon="el-icon-edit" @click="handleIn(scope.row)">第三方入驻</el-button>
 
-                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">审核</el-button>
+                        <router-link :to="{path:'/Shopadd',query: {id: scope.row.shop_id}}">
+							<el-button type="text" icon="el-icon-edit">编辑</el-button>
+						</router-link>
                         <!--<el-button type="text" icon="el-icon-edit" @click="handleEdit2(scope.$index, scope.row)">广告位</el-button>-->
                         <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                         <!--<el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete2(scope.$index, scope.row)">删除广告位</el-button>-->
@@ -403,7 +410,8 @@
 		        search:{
 		        	user_id:'',
 		        	keywords:'',
-		        	contact:''	
+		        	contact:'',
+		        	status:''
 		        },
 		        lp_idcard:{
 		        	front:'',

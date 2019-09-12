@@ -15,7 +15,7 @@ axios.defaults.baseURL = api.Base; // 配置接口地址
 axios.defaults.withCredentials = false;
 axios.defaults.headers['channel'] = 'web'
 //axios.defaults.headers['build'] = 99999999
-axios.defaults.headers['build'] = 20190730
+axios.defaults.headers['build'] = 20190912
 // http请求拦截器
 var loadinginstace
 //axios.interceptors.request.use(config => {
@@ -102,23 +102,23 @@ axios.interceptors.response.use(function(response) {
 		//         })
 		//      }
 
-	}else if(response.data.status == 414&&response.data.message.indexOf('权限')>-1){
-		if(localStorage.getItem('login') == 'buurt') {
-			
-			return router.replace({
-				path: '4141',
-				query: {
-					redirect: router.history.current.fullPath
-				}
-			})
-		} else {
-			return router.replace({
-				path: '403',
-				query: {
-					redirect: router.history.current.fullPath
-				}
-			})
-		}
+//	}else if(response.data.status == 414){
+//		if(localStorage.getItem('login') == 'buurt') {
+//			
+//			return router.replace({
+//				path: '4141',
+//				query: {
+//					redirect: router.history.current.fullPath
+//				}
+//			})
+//		} else {
+//			return router.replace({
+//				path: '403',
+//				query: {
+//					redirect: router.history.current.fullPath
+//				}
+//			})
+//		}
 	}else {
 		return response;
 	}

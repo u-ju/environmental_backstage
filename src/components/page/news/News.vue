@@ -133,6 +133,37 @@
                 <el-form-item label="内容" v-if="form.content_source=='html'" >
                     <iframe frameborder="0" ref="iframe" name="right_home" id="right_home" :src="http" @load="vueFunc" ></iframe>
                 </el-form-item>
+                 <el-form-item label="内容" v-else-if="form.content_source=='video'">
+                  <el-upload
+                    class="avatar-uploader"
+                    action="https://wyhb.zgwyhb.com/api/common/upload/video"
+                    accept='.mp4,.qlv,.qsv,.ogg,.flv,.avi,.wmv,.rmvb'  
+                    :data="paramsdata"                                 
+                    :show-file-list="false"
+                    :before-upload="beforeUploadVideo"                 
+                    :on-success="handleVideoSuccess"                   
+                    :on-progress="uploadVideoProcess"
+                    :http-request="upLoadvideo"
+                    >                 
+                    <video
+                      v-if="Video !='' && videoFlag == false"
+                      :src="Video"
+                      width="350"
+                      height="180"
+                      controls="controls"
+                    >您的浏览器不支持视频播放</video>    
+                    <i
+                      v-else-if="Video =='' && videoFlag == false"
+                      class="el-icon-plus avatar-uploader-icon"
+                    ></i>           
+                    <el-progress
+                      v-if="videoFlag == true"
+                      type="circle"
+                      :percentage="videoUploadPercent"
+                      style="margin-top:30px"
+                    ></el-progress>    
+                  </el-upload>
+                </el-form-item>
                 <el-form-item label="内容" v-else>
                 	<el-input  type="textarea" v-model="form.content"></el-input>
                 </el-form-item>
@@ -415,7 +446,48 @@
                 })
                 this.delVisible = false;
                 
-            }
+            },
+            upLoadvideo(file){
+				const formData = new FormData()
+      			var that =this;
+      			console.log(file)
+		      formData.append('file',file.file)
+		      formData.append('video',file.file)
+		      formData.append('source','file')
+		      this.$axios.post(this.ports.common.video,formData).then(res => res.data)
+		      .then(data => {
+		      	
+		        if(data.status == 200){
+		          that.Video=data.result.video_url
+		          that.form.content = data.result.video_url
+		          
+		          that.videoFlag = false;
+		        }else{
+		        	that.$message.warning(res.data.message);
+		        }
+		      })
+		      .catch(function (error) {
+					that.$message.error(`执行失败`);
+				});
+			},
+			beforeUploadVideo(file) {          //视频上传之前判断他的大小
+		      const isLt10M = file.size / 1024 / 1024  < 2000;
+		      if (!isLt10M) {
+		        this.$message.error('上传视频大小不能超过2000MB哦!');
+		        return false;
+		      }
+		    },
+		    uploadVideoProcess(event, file, fileList){    //视频上传的时候获取上传进度传给进度条
+		      this.videoFlag = true;
+		      this.videoUploadPercent = parseInt(file.percentage);
+		      console.log(this.videoUploadPercent)
+		    },
+		    handleVideoSuccess(res, file) {           //视频上传成功之后返回视频地址
+		      this.videoFlag = false;
+		      this.videoUploadPercent = 0;
+		      console.log(res)
+		      this.Video = res.data[0];
+		    },
         }
     }
 
