@@ -59,11 +59,16 @@
                 		</router-link>
 					</template>
                 </el-table-column>
+                
                 <el-table-column prop="order_no" label="订单编号"  align="center" >
 				</el-table-column>
                 <el-table-column prop="order_amount" label="订单金额"  align="center" >
 				</el-table-column>
 				<el-table-column prop="payment_name" label="支付方式"  align="center" >
+				</el-table-column>
+				<el-table-column prop="pay_no" label="支付单号"  align="center" >
+				</el-table-column>
+                <el-table-column prop="pay_cash" label="支付金额"  align="center" >
 				</el-table-column>
 				<el-table-column prop="order_status_name" label="订单状态"  align="center" >
 				</el-table-column>
@@ -116,13 +121,13 @@
                 <el-form-item label="订单总金额">
                     <div>{{res.order_amount}}</div>
                 </el-form-item>
-                <el-form-item label="用户名称">
+                <el-form-item label="收货人名称">
                     <div>{{res.shipping_name}}</div>
                 </el-form-item>
-                <el-form-item label="用户手机号">
+                <el-form-item label="收货人联系方式">
                     <div>{{res.shipping_phone}}</div>
                 </el-form-item>
-                <el-form-item label="用户地址">
+                <el-form-item label="收货地址">
                     <div>{{res.shipping_address}}</div>
                 </el-form-item>
                 <el-form-item label="支付方式">
@@ -132,14 +137,16 @@
                 	
                 	<el-row>
 					  <el-col :span="10" v-for="(order_goods, index) in res.order_goods" :key='index' :offset="index > 0 ? 1 : 0">
-					    <el-card :body-style="{ padding: '0px' }">
-					      <img :src="order_goods.thumb" class="image">
-					      <div style="padding: 14px;">
-					        <div>{{order_goods.spu_name}}{{order_goods.sku_name}}</div>
-					        <div>{{order_goods.real_price}}<i class="el-icon-close"></i>{{order_goods.buy_count}}</div>
-					        
-					      </div>
-					    </el-card>
+					    <el-card :body-style="{ padding: '0px' }" >
+								<div @click='goodsdetail(order_goods.spu_id)'>
+									<img :src="order_goods.thumb" class="image">
+									<div style="padding: 14px;">
+										<div>{{order_goods.spu_name}}{{order_goods.sku_name}}</div>
+										<div>{{order_goods.real_price}}<i class="el-icon-close"></i>{{order_goods.buy_count}}</div>
+	
+									</div>
+								</div>
+							</el-card>
 					  </el-col>
 					</el-row>
                 </el-form-item>
@@ -224,6 +231,16 @@
             }
         },
         methods: {
+        	goodsdetail(spu_id) {
+				
+				this.$router.push({
+					path: '/GoodskuAdd',
+					query: {
+						id: spu_id
+					}
+				})
+				this.editVisible = false;
+			},
         	tjwl(){
         		this.wl=this.wl+1
         	},

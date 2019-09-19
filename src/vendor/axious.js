@@ -15,7 +15,7 @@ axios.defaults.baseURL = api.Base; // 配置接口地址
 axios.defaults.withCredentials = false;
 axios.defaults.headers['channel'] = 'web'
 //axios.defaults.headers['build'] = 99999999
-axios.defaults.headers['build'] = 20190912
+axios.defaults.headers['build'] = 20190919
 // http请求拦截器
 var loadinginstace
 //axios.interceptors.request.use(config => {

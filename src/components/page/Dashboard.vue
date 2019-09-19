@@ -1,9 +1,9 @@
 <template>
     <div  v-loading="loading">
     	<el-row :gutter="20">
-            <el-col :span="6">
+            <el-col :span="6" v-for="(item,index) in single" :key="index">
     			<el-row :gutter="20" class="mgb20">
-    				<template v-for="(item,index) in single" >
+    				<template  >
                     <el-col :span="24">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
                             <div class="grid-content" :class="item.class">
@@ -260,7 +260,8 @@
 				this.$axios.get(that.ports.Home.index).then(function(res) {
 		        	var single = res.data.result.single;
 		        	for(var i in single){
-		        		single[i]["class"]='grid-con-'+(i-0+1)
+//		        		single[i]["class"]='grid-con-'+(i-0+1)
+						single[i]["class"]='grid-con-1'
 		        	}
 		        	that.single = single;
 		        	that.loading = false;

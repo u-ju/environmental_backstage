@@ -409,6 +409,7 @@
             this.getParams();
             this.getData()
             this.getconfigall()
+            console.log(this.$route.params.id)
         },
         computed: {
             
@@ -479,6 +480,7 @@
         		
         	},
         	getParams () {
+//      		console.log(this.$route.params.id)
 		        // 取到路由带过来的参数 
 		        if(!this.$route.query.id){
 		        	return false

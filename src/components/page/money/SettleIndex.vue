@@ -44,6 +44,14 @@
                 <el-table-column prop="fee" label="手续费"   align="center">
                 </el-table-column>
                 <el-table-column  prop='flow_name' label="来源" align="center">
+                	<template slot-scope="scope">
+                		<div>{{scope.row.flow_name}}</div>
+                		<template v-if="scope.row.flow='bankcard'">
+                			<div>{{scope.row.flow_ext.card_no}}</div>
+	                		<div>{{scope.row.flow_ext.cardholder}}</div>
+	                		<div>{{scope.row.flow_ext.sub_branch}}</div>
+                		</template>
+                	</template>
                 </el-table-column>
                 <el-table-column prop="status_name" label="审核状态"  align="center">
                 	<template slot-scope="scope">
@@ -145,6 +153,9 @@
             	var that =this;
 				this.$axios.get(that.ports.wallet.settleWithdrawIndex+"?page="+page+url).then(function(res) {
 		        	that.tableData = res.data.result.list;
+		        	for(var i in that.tableData){
+		        		that.tableData[i].flow_ext = JSON.parse(that.tableData[i].flow_ext)
+		        	}
 		        	that.last_page = Number(res.data.result.page.last_page);
 		        	that.cur_page = Number(res.data.result.page.current_page);
 		            that.loading = false
